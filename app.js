@@ -3,6 +3,11 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+
+const authRoutes = require("./routes/auth");
 
 // DB Connection
 mongoose
@@ -18,11 +23,13 @@ mongoose
     console.log("DB CONNECTED FAIL", err);
   });
 
+// middleware
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(cors());
 
 // routes
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+app.use("/api", authRoutes);
 
 // PORT
 const port = process.env.PORT || 8000;
