@@ -24,6 +24,10 @@ router.post("/signin", [
     check('password', "password is required").isLength({ min: 1 }),
 ], signin);
 
+// @type    GET
+// @route   /api/signout
+// @desc    route for sign out user
+// @access  PUBLIC
 router.get("/signout", signout);
 
 module.exports = router;
