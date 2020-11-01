@@ -1,10 +1,9 @@
 const User = require("../models/user");
-const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
-const expressJwt = require('express-jwt');
+const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+const expressJwt = require("express-jwt");
 
 exports.signup = (req, res) => {
-
   const errors = validationResult(req);
 
   // if error then send error message & param
@@ -29,12 +28,11 @@ exports.signup = (req, res) => {
       name: user.name,
       email: user.email,
     });
-
   });
-}
+};
 
-exports.signin = (req, res) => {
-  const {email, password} = req.body;
+exports.signIn = (req, res) => {
+  const { email, password } = req.body;
   const errors = validationResult(req);
 
   // if error then send error message & param
@@ -46,8 +44,8 @@ exports.signin = (req, res) => {
     });
   }
 
-  User.findOne({email}, (err, user) => {
-    console.log("err, user: ", err, user)
+  User.findOne({ email }, (err, user) => {
+    console.log("err, user: ", err, user);
     if (err || !user) {
       return res.status(400).json({
         msg: "User email does not exist",
@@ -61,13 +59,13 @@ exports.signin = (req, res) => {
     }
 
     // create token
-    const token = jwt.sign({_id: user._id}, process.env.SECRET);
+    const token = jwt.sign({ _id: user._id }, process.env.SECRET);
 
     // put token in cookie
-    res.cookie('token', token, {expire: new Date() + 999});
+    res.cookie("token", token, { expire: new Date() + 999 });
 
     // send response to front end
-    const {_id, name, email, role} = user;
+    const { _id, name, email, role } = user;
     return res.json({
       token,
       user: {
@@ -77,19 +75,17 @@ exports.signin = (req, res) => {
         role,
       },
     });
-
-  })
-  .catch(e => {
-    console.log('error in find one user ', e);
+  }).catch((e) => {
+    console.log("error in find one user ", e);
   });
-}
+};
 
-exports.signout = (req, res) => {
+exports.signOut = (req, res) => {
   res.cleanCookie("token");
   res.json({
-    msg: "user signout successfully",
+    msg: "user sign out successfully",
   });
-}
+};
 
 // protected routes
 exports.isSignedIn = expressJwt({
@@ -99,7 +95,7 @@ exports.isSignedIn = expressJwt({
 
 // custom middleware
 exports.isAuthenticated = (req, res, next) => {
-  let checker = req.profile && req.auth && req.profile._id === req.auth._id;
+  let checker = req.profile && req.auth && req.profile._id == req.auth._id;
   if (!checker) {
     return res.status(403).json({
       msg: "ACCESS DENIED",
@@ -107,7 +103,7 @@ exports.isAuthenticated = (req, res, next) => {
   }
 
   next();
-}
+};
 
 exports.isAdmin = (req, res, next) => {
   if (req.profile.role === 0) {
@@ -117,4 +113,4 @@ exports.isAdmin = (req, res, next) => {
   }
 
   next();
-}
+};
