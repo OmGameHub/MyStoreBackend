@@ -9,7 +9,7 @@ exports.getProductById = (req, res, next, id) => {
     .exec((err, product) => {
       if (err || !product) {
         return res.status(400).json({
-          msg: "Product not found in DB",
+          error: "Product not found in DB",
         });
       }
 
@@ -33,7 +33,7 @@ exports.updateStock = (req, res, next) => {
   Product.bulkWrite(bulkOpProducts, {}, (err, products) => {
     if (err) {
       return res.status(400).json({
-        msg: "Failed to perform bulk operation",
+        error: "Failed to perform bulk operation",
       });
     }
 
@@ -48,7 +48,7 @@ exports.createProduct = (req, res) => {
   form.parse(req, (err, fields, files) => {
     if (err) {
       return res.status(400).json({
-        msg: "Problem with image",
+        error: "Problem with image",
       });
     }
 
@@ -56,7 +56,7 @@ exports.createProduct = (req, res) => {
 
     if (!name || !description || !price || !category || !stock) {
       return res.status(400).json({
-        msg: "All fields are required",
+        error: "All fields are required",
       });
     }
 
@@ -66,7 +66,7 @@ exports.createProduct = (req, res) => {
     if (files.photo) {
       if (files.photo.size > 3000000) {
         return res.status(400).json({
-          msg: "File size is too big",
+          error: "File size is too big",
         });
       }
 
@@ -77,7 +77,7 @@ exports.createProduct = (req, res) => {
     product.save((err, product) => {
       if (err || !product) {
         res.status(400).json({
-          msg: "Failed to save product into DB",
+          error: "Failed to save product into DB",
         });
       }
 
@@ -113,7 +113,7 @@ exports.getAllProducts = (req, res) => {
     .exec((err, products) => {
       if (err) {
         return res.status(400).json({
-          msg: "No Product found",
+          error: "No Product found",
         });
       }
 
@@ -128,7 +128,7 @@ exports.updateProduct = (req, res) => {
   form.parse(req, (err, fields, files) => {
     if (err) {
       return res.status(400).json({
-        msg: "Problem with image",
+        error: "Problem with image",
       });
     }
 
@@ -139,7 +139,7 @@ exports.updateProduct = (req, res) => {
     if (files.photo) {
       if (files.photo.size > 3000000) {
         return res.status(400).json({
-          msg: "File size is too big",
+          error: "File size is too big",
         });
       }
 
@@ -150,7 +150,7 @@ exports.updateProduct = (req, res) => {
     product.save((err, product) => {
       if (err || !product) {
         res.status(400).json({
-          msg: "Failed to update product into DB",
+          error: "Failed to update product into DB",
         });
       }
 
@@ -165,12 +165,12 @@ exports.removeProduct = (req, res) => {
   product.remove((err, removeProduct) => {
     if (err) {
       return res.status(400).json({
-        msg: `Failed to delete the product`,
+        error: `Failed to delete the product`,
       });
     }
 
     return res.json({
-      msg: `Successfully deleted the product`,
+      message: `Successfully deleted the product`,
       removeProduct,
     });
   });
@@ -180,7 +180,7 @@ exports.getAllUniqueCategories = (req, res) => {
   Product.distinct("category", {}, (err, categories) => {
     if (err) {
       return res.status(400).json({
-        msg: "No category found",
+        error: "No category found",
       });
     }
 

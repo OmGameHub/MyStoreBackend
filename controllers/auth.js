@@ -10,7 +10,7 @@ exports.signup = (req, res) => {
   if (!errors.isEmpty()) {
     const error = errors.array()[0];
     return res.status(422).json({
-      msg: error.msg,
+      error: error.msg,
       param: error.param,
     });
   }
@@ -19,7 +19,7 @@ exports.signup = (req, res) => {
   user.save((err, user) => {
     if (err) {
       return res.status(400).json({
-        msg: "Not able to save user in DB",
+        error: "Not able to save user in DB",
       });
     }
 
@@ -39,22 +39,21 @@ exports.signIn = (req, res) => {
   if (!errors.isEmpty()) {
     const error = errors.array()[0];
     return res.status(422).json({
-      msg: error.msg,
+      error: error.msg,
       param: error.param,
     });
   }
 
   User.findOne({ email }, (err, user) => {
-    console.log("err, user: ", err, user);
     if (err || !user) {
       return res.status(400).json({
-        msg: "User email does not exist",
+        error: "User email does not exist",
       });
     }
 
     if (!user.authenticate(password)) {
       return res.status(401).json({
-        msg: "Email and password no not match",
+        error: "Email and password no not match",
       });
     }
 
@@ -75,15 +74,13 @@ exports.signIn = (req, res) => {
         role,
       },
     });
-  }).catch((e) => {
-    console.log("error in find one user ", e);
   });
 };
 
 exports.signOut = (req, res) => {
-  res.cleanCookie("token");
+  res.clearCookie("token");
   res.json({
-    msg: "user sign out successfully",
+    message: "user sign out successfully",
   });
 };
 
@@ -98,7 +95,7 @@ exports.isAuthenticated = (req, res, next) => {
   let checker = req.profile && req.auth && req.profile._id == req.auth._id;
   if (!checker) {
     return res.status(403).json({
-      msg: "ACCESS DENIED",
+      error: "ACCESS DENIED",
     });
   }
 
@@ -108,7 +105,7 @@ exports.isAuthenticated = (req, res, next) => {
 exports.isAdmin = (req, res, next) => {
   if (req.profile.role === 0) {
     return res.status(403).json({
-      msg: "ACCESS DENIED",
+      error: "ACCESS DENIED",
     });
   }
 

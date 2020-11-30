@@ -5,7 +5,7 @@ exports.getUserById = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user) {
       return res.status(400).json({
-        msg: "No user was found in DB",
+        error: "No user was found in DB",
       });
     }
 
@@ -31,7 +31,7 @@ exports.updateUser = (req, res) => {
     (err, user) => {
       if (err || !user) {
         return res.status(400).json({
-          msg: "Failed to update user",
+          error: "Failed to update user",
         });
       }
 
@@ -51,7 +51,7 @@ exports.getUserPurchaseList = (req, res) => {
     .exec((err, order) => {
       if (err || !order) {
         return res.status(400).json({
-          msg: "No order in this account found",
+          error: "No order in this account found",
         });
       }
 
@@ -81,7 +81,7 @@ exports.pushOrderInPurchaseList = (req, res, next) => {
     (err, purchases) => {
       if (err || !purchases) {
         return res.status(400).json({
-          msg: "Unable to update purchase list",
+          error: "Unable to update purchase list",
         });
       }
     }
