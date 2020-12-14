@@ -1,5 +1,13 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { v4: uuid } = require("uuid");
+const brainTree = require("braintree");
+
+const brainTreeGateway = new brainTree.BraintreeGateway({
+  environment: brainTree.Environment.Sandbox,
+  merchantId: process.env.BRAIN_TREE_MERCHANT_Id,
+  publicKey: process.env.BRAIN_TREE_PUBLIC_KEY,
+  privateKey: process.env.BRAIN_TREE_SECRET_KEY,
+});
 
 exports.makeStripePayment = (req, res) => {
   const { products, token } = req.body;
@@ -46,4 +54,36 @@ exports.makeStripePayment = (req, res) => {
           console.log("stripe charges error", err);
         });
     });
+};
+
+exports.getBrainTreeToken = (req, res) => {
+  brainTreeGateway.clientToken.generate({}, (err, response) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else {
+      return res.send(response);
+    }
+  });
+};
+
+exports.processBrainTreePayment = (req, res) => {
+  const nonceFromTheClient = req.body.payment_method_nonce;
+  const amountFromTheClient = req.body.amount;
+
+  brainTreeGateway.transaction.sale(
+    {
+      amount: amountFromTheClient,
+      paymentMethodNonce: nonceFromTheClient,
+      options: {
+        submitForSettlement: true,
+      },
+    },
+    (err, result) => {
+      if (err) {
+        return res.status(500).json(err);
+      } else {
+        return res.json(result);
+      }
+    }
+  );
 };
